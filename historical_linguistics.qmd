@@ -1,0 +1,18 @@
+---
+title: "Historical Linguistics: Investigating Common Word and Phrase Connections"
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+---
+
+```{python}
+#| label: fig-line-plot
+#| fig-cap: "Books and Words Used as Transcribed to Modern Alphabet"
+#| echo: true
+from run_pipeline import find_non_modern_words
+df = find_non_modern_words()
+print(df.head(5))
+print("Table 1")
+```
+As seen in Table 1, the top occurances of words can be seen, and all of them are coming from the earliest of the three works analysed. That being the "Law Codes".

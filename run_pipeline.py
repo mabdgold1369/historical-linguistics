@@ -127,27 +127,27 @@ if df_books.is_empty():
     print(f"\nWARNING: No valid book files were loaded from directory: {books_dir.resolve()}")
     print("Ensure files are named like 'MyBook_1900.txt' and placed in the correct folder.\n")
 
-
-results = (
-    df_books
-    .with_columns(
-        pl.col("text")
-        .str.to_lowercase()
-        .str.replace_all("[þÞð]", "th", literal=False)
-        .str.replace_all("[æÆ]", "e", literal=False)
-        .str.replace_all(r"[^a-z\s]", "", literal=False)
-        .str.strip_chars()
-        .str.split(" ")
-        .alias("word")
+def find_non_modern_words():
+    results = (
+        df_books
+        .with_columns(
+            pl.col("text")
+            .str.to_lowercase()
+            .str.replace_all("[þÞð]", "th", literal=False)
+            .str.replace_all("[æÆ]", "e", literal=False)
+            .str.replace_all(r"[^a-z\s]", "", literal=False)
+            .str.strip_chars()
+            .str.split(" ")
+            .alias("word")
+        )
+        .explode("word")
+        .filter(pl.col("word") != "")
+        .filter(~pl.col("word").is_in(exclusion_set))
+        .sort("year")
     )
-    .explode("word")
-    .filter(pl.col("word") != "")
-    .filter(pl.col("word").is_in(exclusion_set))
-    .sort("year")
-)
+    return results
 if results.height > 0:
     winner = results[0, "word"]
-
     print(f"The first non-modern word found is: {winner}")
     print (f"Found in the book: {results[0, 'title']} published in {results[0, 'year']}.")
 else:
